@@ -17,7 +17,16 @@ interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue | null>(null);
+// Reuse one context across hot-module reloads and duplicate module instances,
+// otherwise a remounted consumer reads a different (empty) context and throws.
+const globalScope = globalThis as typeof globalThis & {
+  __forgeThemeContext?: React.Context<ThemeContextValue | null>;
+};
+
+const ThemeContext =
+  globalScope.__forgeThemeContext ??
+  (globalScope.__forgeThemeContext =
+    createContext<ThemeContextValue | null>(null));
 
 /**
  * Applies the theme class to <html>. The initial paint uses the dark default
