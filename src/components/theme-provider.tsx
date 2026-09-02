@@ -30,13 +30,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === "light" || stored === "dark") {
       setThemeState(stored);
-      return;
     }
-    setThemeState(
-      window.matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark",
-    );
   }, []);
 
   useEffect(() => {

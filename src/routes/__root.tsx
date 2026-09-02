@@ -119,7 +119,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 // Applies the stored theme before first paint so there is no light/dark flash.
-const THEME_BOOTSTRAP = `(function(){try{var s=localStorage.getItem("forge-theme");var d=s?s==="dark":!window.matchMedia("(prefers-color-scheme: light)").matches;document.documentElement.classList.toggle("dark",d);}catch(e){document.documentElement.classList.add("dark");}})();`;
+const THEME_BOOTSTRAP = `(function(){try{document.documentElement.classList.toggle("dark",localStorage.getItem("forge-theme")!=="light");}catch(e){document.documentElement.classList.add("dark");}})();`;
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
