@@ -64,8 +64,27 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useTheme() {
+export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used inside ThemeProvider");
-  return ctx;
+  const fallback = useCallback((next?: Theme) => {
+    const root = document.documentElement;
+    const resolved: Theme =
+      next ?? (root.classList.contains("dark") ? "light" : "dark");
+    root.classList.toggle("dark", resolved === "dark");
+    window.localStorage.setItem(STORAGE_KEY, resolved);
+  }, []);
+
+  if (ctx) return ctx;
+
+  // Degrade gracefully instead of blanking the page if a consumer renders
+  // outside the provider (e.g. during a hot reload).
+  return {
+    theme:
+      typeof document !== "undefined" &&
+      document.documentElement.classList.contains("dark")
+        ? "dark"
+        : "light",
+    setTheme: (next: Theme) => fallback(next),
+    toggleTheme: () => fallback(),
+  };
 }
